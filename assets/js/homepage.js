@@ -4,7 +4,7 @@ var nameInputEl =  document.querySelector("#username");
 // creating variables to reference the DOM elements to write data into
 var repoContainerEl = document.querySelector("#repos-container");
 var repoSearchTerm = document.querySelector("#repo-search-term");
-console.log(repoContainerEl);
+var languageButtonsEl = document.querySelector("#language-buttons");
 
 // creating a form submit handler function to be executed upon a form submission event
 var formSubmitHandler = function(event) {
@@ -99,5 +99,28 @@ var displayRepos = function(repos, searchTerm) {
   }
 };
 
+var getFeaturedRepos = function(language){
+    var apiUrl ="https://api.github.com/search/repositories?q=" + language +"+is:featured&sort=help-wanted-issues";
+    fetch(apiUrl).then(function(response){
+        if(response.ok){
+           response.json().then(function(data){
+              displayRepos(data.items,language);
+           });
+        } else {
+            alert('Error: GitHub User Not Found');
+        }
+    })
+};
+var buttonClickHandler = function(event){
+    var language = event.target.getAttribute("data-language");
+    console.log(language);
+    if(language){
+        getFeaturedRepos(language);
+        
+        //clear old content. this is to clear out any remaining text from the repo container
+        repoContainerEl.textContent = "";
+    }
+}
 //add submit event listener
 userFormEl.addEventListener("submit", formSubmitHandler);
+languageButtonsEl.addEventListener("click",buttonClickHandler);
